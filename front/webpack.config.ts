@@ -68,6 +68,17 @@ const config: webpack.Configuration = {
     path: path.join(__dirname, 'dist'),
     filename: '[name].js',
     publicPath: '/dist/',    
+  },
+  devServer: {
+    historyApiFallback: true, // react router
+    port: 3030,
+    publicPath: '/dist/',
+    // proxy: {
+    //   '/api/': {
+    //     target: 'http://localhost:3055',
+    //     changeOrigin: true,
+    //   },
+    // },
   },  
 };
 
