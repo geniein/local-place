@@ -1,12 +1,18 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useCallback, useEffect, useState } from 'react';
+// import KakaoLogin from 'react-kakao-login';
 import { Link } from 'react-router-dom';
-import { Button, Form, Header, Input, Label, LinkContainer } from './styles';
+import { Button, ButtonKakao, Form, Header, Input, Label, LinkContainer } from './styles';
 
 const LogIn = () => {
+  const onSubmit = useCallback(() => {}, []);
+
+  const onClickKaKao = useCallback(() => {}, []);
+
   return (
     <div id="container">
       <Header>LocalPlace</Header>
-      <Form>
+      <Form onSubmit={onSubmit}>
         <Label id="email-label">
           <span>이메일 주소</span>
           <div>
@@ -20,6 +26,10 @@ const LogIn = () => {
           </div>
         </Label>
         <Button type="submit">로그인</Button>
+        <ButtonKakao type="button" onClick={onClickKaKao}>
+          카카오로그인
+        </ButtonKakao>
+        {/* <KakaoLogin token={token} onSuccess={console.log} onFail={console.error} onLogout={console.info} /> */}
       </Form>
       <LinkContainer>
         아직 회원이 아니신가요?&nbsp;
