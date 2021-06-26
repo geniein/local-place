@@ -4,10 +4,33 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, ButtonKakao, Form, Header, Input, Label, LinkContainer } from './styles';
 
+declare global{
+  interface Window{
+    Kakao:any;
+  }
+}
+
 const LogIn = () => {
   const onSubmit = useCallback(() => {}, []);
 
-  const onClickKaKao = useCallback(() => {}, []);
+  const onClickKaKao = useCallback(() => {
+    window.Kakao.Auth.login({
+      success: (res:any)=>{    
+        axios.get('/api/kakaoAuth',{
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: res.access_token,
+          },
+        }).then((res)=>{
+          localStorage.setItem("token", res.data.token);
+          alert("로그인 되었습니다.");
+        })
+      },
+      fail :  (e:any)=>{      
+        console.log
+      }
+    });
+  }, []);
 
   return (
     <div id="container">
