@@ -57,15 +57,25 @@ export class AppController {
     return { data: postBody };
   }
 
+  @Get('kakaoAuth')
+  @Header('Content-Type', 'application/json')
+  kakaoAuth(@Res() res): void {    
+    const rtn = {token : null};    
+    this.kakaoLogin.setToken(res.header.authorization);      
+    rtn.token = this.kakaoLogin.accessToken;
+    
+    return res.send(rtn);
+  }
+
   @Get('kakaoLogin')
   @Header('Content-Type', 'text/html')
   getKakaoLoginPage(): string {
     return `
       <div>        
-        <form action="/kakaoLoginLogic" method="GET">
+        <form action="/api/kakaoLoginLogic" method="GET">
           <input type="submit" value="로그인" />
         </form>
-        <form action="/kakaoLogout" method="GET">
+        <form action="/api/kakaoLogout" method="GET">
           <input type="submit" value="로그아웃 및 연결 끊기" />
         </form>
       </div>
@@ -77,7 +87,7 @@ export class AppController {
 
     const _hostName = 'https://kauth.kakao.com';
     const _restApiKey = process.env.KAKAORESTAPIKEY;     
-    const _redirectUrl = 'http://localhost:3055/kakaoLoginLogicRedirect';
+    const _redirectUrl = 'http://localhost:3055/api/kakaoLoginLogicRedirect';
     const url = `${_hostName}/oauth/authorize?client_id=${_restApiKey}&redirect_uri=${_redirectUrl}&response_type=code`;
     return res.redirect(url);
   }
@@ -86,7 +96,7 @@ export class AppController {
   kakaoLoginLogicRedirect(@Query() qs, @Res() res): void {
     console.log(qs.code);
     const _restApiKey = process.env.KAKAORESTAPIKEY; 
-    const _redirect_uri = 'http://localhost:3055/kakaoLoginLogicRedirect';
+    const _redirect_uri = 'http://localhost:3055/api/kakaoLoginLogicRedirect';
     const _hostName = `https://kauth.kakao.com/oauth/token?grant_type=authorization_code&client_id=${_restApiKey}&redirect_uri=${_redirect_uri}&code=${qs.code}`;
     const _headers = {
       headers: {

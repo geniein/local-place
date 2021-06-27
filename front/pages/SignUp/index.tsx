@@ -4,7 +4,7 @@ import React from 'react';
 const SignUp = () => {
   return (
     <div id="container">
-      <Header>Sleact</Header>
+      <Header>LocalPlace</Header>
       <Form>
         <Label id="email-label">
           <span>이메일 주소</span>

@@ -1,36 +1,80 @@
 import axios from 'axios';
 import React, { useCallback, useEffect, useState } from 'react';
-// import KakaoLogin from 'react-kakao-login';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import { Button, ButtonKakao, Form, Header, Input, Label, LinkContainer } from './styles';
 
 declare global{
   interface Window{
-    Kakao:any;
+    Kakao:any;  
   }
 }
 
 const LogIn = () => {
-  const onSubmit = useCallback(() => {}, []);
+  const [idChk, setIdChk] = useState(false);
+  const onSubmit = useCallback(() => {    
+  }, []);
+  
+  const onClickRouteTest = useCallback(() => {
+    console.log(idChk);
+  }, []);
 
   const onClickKaKao = useCallback(() => {
-    window.Kakao.Auth.login({
+    window.Kakao.Auth.login({      
       success: (res:any)=>{    
-        axios.get('/api/kakaoAuth',{
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: res.access_token,
+        window.Kakao.API.request({
+          url: '/v2/user/me',
+          data: {
+            property_keys: ["kakao_account.email","kakao_account.profile"]
           },
-        }).then((res)=>{
-          localStorage.setItem("token", res.data.token);
-          alert("로그인 되었습니다.");
+          success: function(getInfo:any) {            
+            loginCheck(getInfo.kakao_account.email,res.access_token);
+          },
+          fail: function(err:any) {
+            console.log(err);
+          }
         })
+        
       },
       fail :  (e:any)=>{      
         console.log
       }
     });
+  }, [idChk]);
+
+  const loginCheck = async (getInfo:any, token:string) => {
+      await axios.get('/api/auth',{
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+          Loginemail:getInfo            
+        }
+      }).then((res)=>{        
+        if(res.data.idchk===false){
+          console.log('aa');
+          setIdChk(true);
+        }else{
+          localStorage.setItem("token", res.data.token)
+        }
+        //console.log(res);
+        //localStorage.setItem("token", res.data.token);          
+      })
+  }
+
+  const onClickLogOut = useCallback(() => {
+    window.Kakao.API.request({
+      url: '/v1/user/unlink',
+      success: function(res:any) {
+        console.log(res);
+      },
+      fail: function(err:any) {
+        console.log(err);
+      }
+    })
   }, []);
+
+  if(idChk === true){
+    <Redirect to='/signup'/>
+  }
 
   return (
     <div id="container">
@@ -49,8 +93,14 @@ const LogIn = () => {
           </div>
         </Label>
         <Button type="submit">로그인</Button>
+        <ButtonKakao type="button" onClick={onClickRouteTest}>
+        onClickRouteTest
+        </ButtonKakao>
         <ButtonKakao type="button" onClick={onClickKaKao}>
           카카오로그인
+        </ButtonKakao>
+        <ButtonKakao type="button" onClick={onClickLogOut}>
+          로그아웃
         </ButtonKakao>
         {/* <KakaoLogin token={token} onSuccess={console.log} onFail={console.error} onLogout={console.info} /> */}
       </Form>
