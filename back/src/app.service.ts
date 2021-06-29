@@ -24,6 +24,20 @@ export class KakaoLogin {
   async login(url: string, headers: any): Promise<any> {
     return await this.http.post(url, '', { headers }).toPromise();
   }
+  async kakaoUserInfo():Promise<any> {    
+    const _url = 'https://kapi.kakao.com/v2/user/me';
+    const _header = {
+      Authorization: `bearer ${this.accessToken}`,
+    };    
+    return await this.http.get(_url,{ headers: _header }).toPromise();    
+  }
+
+  async kakaoAccountChk():Promise<any> {    
+    const email = await this.kakaoUserInfo();
+    console.log(email.data.kakao_account.email);
+    return email;    
+  }
+
   setToken(token: string): boolean {
     this.accessToken = token;
     return true;

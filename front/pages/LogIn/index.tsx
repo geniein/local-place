@@ -20,20 +20,9 @@ const LogIn = () => {
 
   const onClickKaKao = useCallback(() => {
     window.Kakao.Auth.login({      
-      success: (res:any)=>{    
-        window.Kakao.API.request({
-          url: '/v2/user/me',
-          data: {
-            property_keys: ["kakao_account.email","kakao_account.profile"]
-          },
-          success: function(getInfo:any) {            
-            loginCheck(getInfo.kakao_account.email,res.access_token);
-          },
-          fail: function(err:any) {
-            console.log(err);
-          }
-        })
-        
+      success: (res:any)=>{ 
+        console.log(res);
+        loginCheck(res.access_token);                  
       },
       fail :  (e:any)=>{      
         console.log
@@ -41,23 +30,27 @@ const LogIn = () => {
     });
   }, [idChk]);
 
-  const loginCheck = async (getInfo:any, token:string) => {
-      await axios.get('/api/auth',{
+  const loginCheck = async (token:string) => {
+      await axios.get('/api/kakaoAuth',{
         headers: {
           "Content-Type": "application/json",
-          Authorization: token,
-          Loginemail:getInfo            
+          Authorization: token                  
         }
-      }).then((res)=>{        
+      }).then((res)=>{
+        console.log('aa');
+        console.log(res);
         if(res.data.idchk===false){
           console.log('aa');
-          setIdChk(true);
+          // setIdChk(true);
         }else{
           localStorage.setItem("token", res.data.token)
         }
         //console.log(res);
         //localStorage.setItem("token", res.data.token);          
-      })
+      }).finally(()=>{
+        console.log('fanial');
+      }
+      )
   }
 
   const onClickLogOut = useCallback(() => {

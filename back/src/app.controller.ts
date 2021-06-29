@@ -59,12 +59,13 @@ export class AppController {
 
   @Get('kakaoAuth')
   @Header('Content-Type', 'application/json')
-  kakaoAuth(@Res() res): void {    
-    const rtn = {token : null};    
-    this.kakaoLogin.setToken(res.header.authorization);      
-    rtn.token = this.kakaoLogin.accessToken;
+  async kakaoAuth(@Req() req, @Res() res): Promise<any> {    
+    const rtn = {token : null};            
+    this.kakaoLogin.setToken(req.headers.authorization);      
+    // let mailChk = await this.kakaoLogin.kakaoAccountChk();
+    // rtn.token = mailChk;
     
-    return res.send(rtn);
+    return this.kakaoLogin.kakaoAccountChk();
   }
 
   @Get('kakaoLogin')
