@@ -34,7 +34,7 @@ export class KakaoLogin {
 
   async kakaoAccountChk():Promise<any> {    
     const email = await this.kakaoUserInfo();
-    console.log(email.data.kakao_account.email);
+    //console.log(email.data.kakao_account.email);
     return email;    
   }
 
