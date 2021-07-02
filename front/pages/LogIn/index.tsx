@@ -1,6 +1,6 @@
 import axios from 'axios';
-import React, { useCallback, useEffect, useState } from 'react';
-import { Link, Redirect } from 'react-router-dom';
+import React, { FC, useCallback, useEffect, useState } from 'react';
+import { Link, Redirect, RouteComponentProps } from 'react-router-dom';
 import { Button, ButtonKakao, Form, Header, Input, Label, LinkContainer } from './styles';
 
 declare global{
@@ -9,13 +9,9 @@ declare global{
   }
 }
 
-const LogIn = () => {
-  const [idChk, setIdChk] = useState(false);
+const LogIn = ({history}: RouteComponentProps) => {
+  const [kakaoEmail, setKakaoEmail] = useState('');
   const onSubmit = useCallback(() => {    
-  }, []);
-  
-  const onClickRouteTest = useCallback(() => {
-    console.log(idChk);
   }, []);
 
   const onClickKaKao = useCallback(() => {
@@ -28,29 +24,32 @@ const LogIn = () => {
         console.log
       }
     });
-  }, [idChk]);
+  }, []);
 
-  const loginCheck = async (token:string) => {
-      await axios.get('/api/kakaoAuth',{
+  const loginCheck = (token:string) => {
+      axios.get('/api/kakaoAuth',{
         headers: {
           "Content-Type": "application/json",
           Authorization: token                  
         }
-      }).then((res)=>{
-        console.log('aa');
-        console.log(res);
-        if(res.data.idchk===false){
-          console.log('aa');
-          // setIdChk(true);
+      }).then((res)=>{                
+        if(res.data.result ===false){
+          console.log('false');          
+          //setKakaoEmail(res.data.email);                    
+          //console.log(kakaoEmail);
+          history.push(
+            {
+              pathname:'/signup',
+              state : {kakaoEmail: res.data.email}
+            });        
+          //history.push('/signup',kakaoEmail);  
         }else{
+          console.log('true');          
           localStorage.setItem("token", res.data.token)
-        }
-        //console.log(res);
-        //localStorage.setItem("token", res.data.token);          
+        }               
       }).finally(()=>{
-        console.log('fanial');
-      }
-      )
+        console.log('final');
+      })
   }
 
   const onClickLogOut = useCallback(() => {
@@ -64,10 +63,6 @@ const LogIn = () => {
       }
     })
   }, []);
-
-  if(idChk === true){
-    <Redirect to='/signup'/>
-  }
 
   return (
     <div id="container">
@@ -85,10 +80,7 @@ const LogIn = () => {
             <Input type="password" id="password" name="password" />
           </div>
         </Label>
-        <Button type="submit">로그인</Button>
-        <ButtonKakao type="button" onClick={onClickRouteTest}>
-        onClickRouteTest
-        </ButtonKakao>
+        <Button type="submit">로그인</Button>        
         <ButtonKakao type="button" onClick={onClickKaKao}>
           카카오로그인
         </ButtonKakao>

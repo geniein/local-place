@@ -9,6 +9,7 @@ import {
   Res,
   Req,
   Query,
+  HttpCode,
 } from '@nestjs/common';
 import { AppService, KakaoLogin } from './app.service';
 import { Request, Response } from 'express';
@@ -58,14 +59,14 @@ export class AppController {
   }
 
   @Get('kakaoAuth')
+  @HttpCode(200)
   @Header('Content-Type', 'application/json')
-  async kakaoAuth(@Req() req, @Res() res): Promise<any> {    
-    const rtn = {token : null};            
+  kakaoAuth(@Req() req, @Res() res):any {    
+    const rtn = {token : null};                
     this.kakaoLogin.setToken(req.headers.authorization);      
-    // let mailChk = await this.kakaoLogin.kakaoAccountChk();
-    // rtn.token = mailChk;
-    
-    return this.kakaoLogin.kakaoAccountChk();
+    let mailChk = this.kakaoLogin.kakaoAccountChk().then((rtn)=>{          
+      res.send(rtn);
+    });    
   }
 
   @Get('kakaoLogin')

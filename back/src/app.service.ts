@@ -32,10 +32,21 @@ export class KakaoLogin {
     return await this.http.get(_url,{ headers: _header }).toPromise();    
   }
 
-  async kakaoAccountChk():Promise<any> {    
-    const email = await this.kakaoUserInfo();
-    //console.log(email.data.kakao_account.email);
-    return email;    
+  async kakaoAccountChk() {    
+    let rtn={
+      token: this.accessToken,
+      email: '',
+      result: false
+    };
+    const kakaoInfo = await this.kakaoUserInfo();    
+    const tmp = 'test@hotmail.co.kr'
+
+    if(kakaoInfo.data.kakao_account.email === tmp){
+      rtn.result = true;      
+    }else{
+      rtn.email = kakaoInfo.data.kakao_account.email;
+    }    
+    return rtn;    
   }
 
   setToken(token: string): boolean {

@@ -1,7 +1,18 @@
 import { Button, Error, Form, Header, Input, Label, LinkContainer, Success } from '@pages/LogIn/styles';
-import React from 'react';
+import { useLocation} from 'react-router-dom';
+import React, { useState } from 'react';
+
+type LocationState = {
+  kakaoEmail: string
+}
 
 const SignUp = () => {
+  const location = useLocation();
+  const locationState = location.state as LocationState;  
+  const [newEmail, setNewemail] = useState('');
+  const onChangeEmail = (e:any) =>{    
+    console.log(e);
+  }
   return (
     <div id="container">
       <Header>LocalPlace</Header>
@@ -9,7 +20,7 @@ const SignUp = () => {
         <Label id="email-label">
           <span>이메일 주소</span>
           <div>
-            <Input type="email" id="email" name="email" />
+            <Input type="email" id="email" value={locationState?.kakaoEmail} name="email" onChange={onChangeEmail}/>
           </div>
         </Label>
         <Label id="nickname-label">
