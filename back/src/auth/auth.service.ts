@@ -1,14 +1,36 @@
 import { Model } from 'mongoose';
 import { HttpService, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { JwtService } from '@nestjs/jwt'
 import { Auth, AuthDocument } from './entities/auth.entity';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
+import {UsersService} from '../users/users.service';
 
 @Injectable()
 export class AuthService {
-  constructor(@InjectModel(Auth.name) private authModel: Model<AuthDocument>,
+  constructor(
+    @InjectModel(Auth.name) private authModel: Model<AuthDocument>,
+    private usersService: UsersService,
+    private jwtService: JwtService
   ) {}  
+  //passport
+  async validateUser(username: string, pass: string): Promise<any> {
+    const user = await this.usersService.findOne(username);
+    if (user && user.password === pass) {
+      const { password, ...result } = user;
+      return result;
+    }
+    return null;
+  }
+  //jwt
+  async login(user: any) {
+    const payload = { username: user.username, sub: user.userId };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
+  }
+
   async create(createAuthDto: CreateAuthDto): Promise<Auth> {    
     const createUser = new this.authModel(createAuthDto);
     return createUser.save();

@@ -17,11 +17,13 @@ export class AuthController {
   }
 
   @Get('/auth')
-  findOne(@Req() req: any, @Body() body:any) {
+  findOne(@Req() req: any, @Body() body:any, @Res() res) {
     console.log(req);
     console.log("----------------------------------------------");
     console.log(body);
-    return this.authService.findOne(req.headers.loginemail);
+    console.log(req.user || false);
+    return res.json(req.user || false)
+    //return this.authService.findOne(req.headers.loginemail);
   }
 
   @Patch(':id')
@@ -38,7 +40,7 @@ export class AuthController {
   @HttpCode(200)
   @Header('Content-Type', 'application/json')
   kakaoAuth(@Req() req, @Res() res):any {    
-    const rtn = {token : null, email: '', result: false};                
+    const rtn = {token : req.headers.authorization, email: '', result: false};                
     this.kakaoLogin.setToken(req.headers.authorization);      
     let mailChk = this.kakaoLogin.kakaoAccountChk()
     .then((resKaKao)=>{
