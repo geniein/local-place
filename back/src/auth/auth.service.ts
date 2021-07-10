@@ -46,6 +46,7 @@ export class AuthService {
     }).exec();    
     const rtn = {result:false};
     if(selectAuth !==null){
+      console.log(selectAuth);
       rtn.result = true;
     }
 
