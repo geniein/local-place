@@ -15,10 +15,10 @@ export class AuthService {
     private jwtService: JwtService
   ) {}  
   //passport
-  async validateUser(username: string, pass: string): Promise<any> {
-    const user = await this.usersService.findOne(username);
-    if (user && user.password === pass) {
-      const { password, ...result } = user;
+  async validateUser(email: string, pass: string): Promise<any> {
+    const user = await this.usersService.findOne(email);
+    if (user && user.pwd === pass) {
+      const { pwd, ...result } = user;
       return result;
     }
     return null;
@@ -40,10 +40,11 @@ export class AuthService {
     return ;
   }
 
-  async findOne(email: string) {    
+  async findOne(email: string, pwd?: string) {    
     const selectAuth = await this.authModel.findOne({
-      email:email
-    }).exec();    
+     email     
+    }).exec();
+    console.log(pwd);
     const rtn = {result:false};
     if(selectAuth !==null){
       console.log(selectAuth);

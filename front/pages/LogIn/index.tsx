@@ -1,3 +1,4 @@
+import useInput from '@hooks/useInput';
 import axios from 'axios';
 import React, { FC, useCallback, useEffect, useState } from 'react';
 import { Link, Redirect, RouteComponentProps } from 'react-router-dom';
@@ -10,9 +11,26 @@ declare global{
 }
 
 const LogIn = ({history}: RouteComponentProps) => {
+  const [email, onChangeEmail] = useInput('');
+  const [pwd, onChangePassword] = useInput('');
   const [kakaoEmail, setKakaoEmail] = useState('');
-  const onSubmit = useCallback(() => {    
-  }, []);
+
+  const onSubmit = useCallback( async (e:any) => {        
+    e.preventDefault();    
+    axios.post('/api/auth/login',
+    {
+      email,
+      pwd
+    }
+    ,{
+      headers: {
+        "Content-Type": "application/json",                         
+      }
+    });
+    console.log(email);             
+  },
+  [email, pwd]
+  );
 
   const onClickKaKao = useCallback(() => {
     window.Kakao.Auth.login({      
@@ -34,15 +52,12 @@ const LogIn = ({history}: RouteComponentProps) => {
         }
       }).then((res)=>{                
         if(res.data.result ===false){
-          console.log('false');          
-          //setKakaoEmail(res.data.email);                    
-          //console.log(kakaoEmail);
+          console.log('false');                    
           history.push(
             {
               pathname:'/signup',
               state : {kakaoEmail: res.data.email}
-            });        
-          //history.push('/signup',kakaoEmail);  
+            });                  
         }else{
           console.log('true');          
           localStorage.setItem("token", res.data.token)
@@ -52,7 +67,7 @@ const LogIn = ({history}: RouteComponentProps) => {
       })
   }
 
-  const onClickLogOut = useCallback(() => {
+  const onClickLogOut = useCallback(() => {    
     window.Kakao.API.request({
       url: '/v1/user/unlink',
       success: function(res:any) {
@@ -71,13 +86,13 @@ const LogIn = ({history}: RouteComponentProps) => {
         <Label id="email-label">
           <span>이메일 주소</span>
           <div>
-            <Input type="email" id="email" name="email" />
+            <Input type="email" id="email" name="email" onChange={onChangeEmail}/>
           </div>
         </Label>
         <Label id="password-label">
           <span>비밀번호</span>
           <div>
-            <Input type="password" id="password" name="password" />
+            <Input type="password" id="password" name="password" onChange={onChangePassword}/>
           </div>
         </Label>
         <Button type="submit">로그인</Button>        

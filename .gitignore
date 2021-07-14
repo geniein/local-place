@@ -81,3 +81,6 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 /react-nodebird.pem
 uploads/
+#temp lock ignore
+package-lock.json
+

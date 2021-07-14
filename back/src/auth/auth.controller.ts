@@ -16,10 +16,9 @@ export class AuthController {
     return this.authService.create(createAuthDto);
   }
 
-  @Get('/auth')
+  @Post('/auth/login')
   findOne(@Req() req: any, @Body() body:any, @Res() res) {
-    console.log(req);
-    console.log("----------------------------------------------");
+    // this.authService.findOne
     console.log(body);
     console.log(req.user || false);
     return res.json(req.user || false)
