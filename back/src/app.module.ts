@@ -5,13 +5,13 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
-import { UsersModule } from './users/users.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({envFilePath: '.env',}), //dotenv
     MongooseModule.forRoot(`mongodb://${process.env.DB_ADDR}:27017/services`), // mogoose
-  AuthModule, UsersModule
+  AuthModule, UserModule
 ],
   controllers: [AppController],
   providers: [AppService],

@@ -2,67 +2,33 @@ import { Model } from 'mongoose';
 import { HttpService, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt'
-import { Auth, AuthDocument } from './entities/auth.entity';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
-import {UsersService} from '../users/users.service';
+import {UserService} from '../user/user.service';
+import {compare} from 'bcrypt';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    @InjectModel(Auth.name) private authModel: Model<AuthDocument>,
-    private usersService: UsersService,
-    private jwtService: JwtService
+  constructor(    
+    private userService: UserService,
+    private jwtService: JwtService    
   ) {}  
   //passport
-  async validateUser(email: string, pass: string): Promise<any> {
-    const user = await this.usersService.findOne(email);
-    if (user && user.pwd === pass) {
-      const { pwd, ...result } = user;
-      return result;
+  async validateUser(email: string, pass: string): Promise<any> {    
+    const user = await this.userService.findById(email);
+    // if (user && compare(pass, user.pwd)) {
+    if (user && pass === user.pwd.toString()  ) {
+      delete user.pwd
+      return user;
     }
     return null;
-  }
+  } 
   //jwt
   async login(user: any) {
-    const payload = { username: user.username, sub: user.userId };
+    const payload = { username: user.email.toString()};
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign(payload),      
     };
   }
-
-  async create(createAuthDto: CreateAuthDto): Promise<Auth> {    
-    const createUser = new this.authModel(createAuthDto);
-    return createUser.save();
-  }
-
-  findAll() {    
-    return ;
-  }
-
-  async findOne(email: string, pwd?: string) {    
-    const selectAuth = await this.authModel.findOne({
-     email     
-    }).exec();
-    console.log(pwd);
-    const rtn = {result:false};
-    if(selectAuth !==null){
-      console.log(selectAuth);
-      rtn.result = true;
-    }
-
-    return rtn;
-  }
-
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
-  }
 }
-
 
 @Injectable()
 export class KakaoLogin {

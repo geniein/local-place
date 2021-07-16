@@ -1,5 +1,5 @@
 import { Prop } from '@nestjs/mongoose';
-export class CreateAuthDto {
+export class CreateUserDto {
     @Prop([String])
     name: string;
 

@@ -10,10 +10,12 @@ import {
   Req,
   Query,
   HttpCode,
+  UseGuards,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { Request, Response } from 'express';
 import { join } from 'path';
+import { AuthGuard } from '@nestjs/passport';
 
 interface PostData {
   data: string;
@@ -22,52 +24,18 @@ interface PostData {
 @Controller('/api')
 export class AppController {
   constructor(
-    private readonly appService: AppService,    
-//    private readonly kakaoLogin: KakaoLogin,
+    private readonly appService: AppService,
   ) {}
 
   @Get()
   getHello(): string {
     return this.appService.getHello();
   }
-  
-  // Header : HTML
-  @Get('/index')
-  @Header('Content-Type', 'text/html')
-  index(): string {
-    return '<h2>Nest HTML</h2>';
-  }
 
-  // Redirect
-  @Get('/index/*')
-  @Redirect('/', 302)
-  indexRedirect(): void {
-    return;
+  @UseGuards(AuthGuard('local'))
+  @Post('/passport/login')
+  async login(@Req() req){
+    console.log(req)
+    return req.user;
   }
-
-  // Post Body (1)
-  @Post('/data')
-  @Header('Content-Type', 'application/json')
-  postData(@Body('data') postBody: string): string {
-    console.log(postBody);
-    return JSON.stringify({ data: postBody });
-  }
-  // Post Body (2)
-  @Post('/data2')
-  @Header('Content-Type', 'application/json')
-  postData2(@Body('data') postBody: string): PostData {
-    return { data: postBody };
-  }
-
-  // @Get('kakaoAuth')
-  // @HttpCode(200)
-  // @Header('Content-Type', 'application/json')
-  // kakaoAuth(@Req() req, @Res() res):any {    
-  //   const rtn = {token : null};                
-  //   this.kakaoLogin.setToken(req.headers.authorization);      
-  //   let mailChk = this.kakaoLogin.kakaoAccountChk().then((rtn)=>{          
-  //     res.send(rtn);
-  //   });    
-  // }
-
 }
