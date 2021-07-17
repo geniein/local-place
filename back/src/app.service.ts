@@ -1,10 +1,18 @@
 import { Injectable, HttpService } from '@nestjs/common';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class AppService {
+  constructor(private httpService: HttpService) {}
+  
   getHello(): string {
     return 'Hello World!';
   }  
+  async getBlock() {
+    const block = await this.httpService.get('http://localhost:3001/blocks').toPromise();    
+    return block.data;
+    //return this.httpService.get('http://localhost:3001/blocks');
+  }
 }
 
 @Injectable()

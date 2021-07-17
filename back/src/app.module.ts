@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { HttpModule, MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import {ConfigModule} from '@nestjs/config';
 import {MongooseModule} from '@nestjs/mongoose'
 import { AppController } from './app.controller';
@@ -11,7 +11,9 @@ import { UserModule } from './user/user.module';
   imports: [
     ConfigModule.forRoot({envFilePath: '.env',}), //dotenv
     MongooseModule.forRoot(`mongodb://${process.env.DB_ADDR}:27017/services`), // mogoose
-  AuthModule, UserModule
+    AuthModule,
+    UserModule,
+    HttpModule
 ],
   controllers: [AppController],
   providers: [AppService],

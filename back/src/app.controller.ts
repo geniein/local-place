@@ -32,10 +32,9 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @UseGuards(AuthGuard('local'))
-  @Post('/passport/login')
-  async login(@Req() req){
-    console.log(req)
-    return req.user;
+  //@UseGuards(AuthGuard('local'))
+  @Get('/blocks')
+  getBlock(@Req() req){
+    return this.appService.getBlock();
   }
 }
