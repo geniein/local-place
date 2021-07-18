@@ -1,22 +1,20 @@
 import useInput from '@hooks/useInput';
 import axios from 'axios';
 import React, { FC, useCallback, useEffect, useState } from 'react';
-import { Link, Redirect, RouteComponentProps } from 'react-router-dom';
+import { Link, Redirect, useHistory } from 'react-router-dom';
 import { Button, ButtonKakao, Form, Header, Input, Label, LinkContainer } from './styles';
 
-declare global{
-  interface Window{
-    Kakao:any;  
-  }
-}
-
-const LogIn = ({history}: RouteComponentProps) => {
+const LogIn = () => {
   const [email, onChangeEmail] = useInput('');
   const [pwd, onChangePassword] = useInput('');
   const [kakaoEmail, setKakaoEmail] = useState('');
-
+  const history = useHistory();
   const onSubmit = useCallback( async (e:any) => {        
-    e.preventDefault();    
+    e.preventDefault();
+    if(email ==='' || pwd===''){
+      alert('ID 혹은 비밀번호가 비여있습니다.');
+      return false;
+    }    
     axios.post('/api/auth/login',
     {
       email,
@@ -26,8 +24,15 @@ const LogIn = ({history}: RouteComponentProps) => {
       headers: {
         "Content-Type": "application/json",                         
       }
-    });
-    console.log(email);             
+    }).then((res)=>{           
+      localStorage.setItem("token", res.data.access_token)                  
+      history.push(
+        {
+          pathname:'/workspace',          
+        });                  
+    }).catch((err)=>{
+      console.log(err);
+    });               
   },
   [email, pwd]
   );
@@ -39,7 +44,7 @@ const LogIn = ({history}: RouteComponentProps) => {
         loginCheck(res.access_token);                  
       },
       fail :  (e:any)=>{      
-        console.log
+        console.log(e);
       }
     });
   }, []);
@@ -61,24 +66,15 @@ const LogIn = ({history}: RouteComponentProps) => {
         }else{
           console.log('true');          
           localStorage.setItem("token", res.data.token)
+          history.push(
+            {
+              pathname:'/workspace',              
+            });
         }               
       }).finally(()=>{
         console.log('final');
       })
   }
-
-  const onClickLogOut = useCallback(() => {    
-    window.Kakao.API.request({
-      url: '/v1/user/unlink',
-      success: function(res:any) {
-        console.log(res);
-      },
-      fail: function(err:any) {
-        console.log(err);
-      }
-    })
-  }, []);
-
   return (
     <div id="container">
       <Header>LocalPlace</Header>
@@ -98,10 +94,7 @@ const LogIn = ({history}: RouteComponentProps) => {
         <Button type="submit">로그인</Button>        
         <ButtonKakao type="button" onClick={onClickKaKao}>
           카카오로그인
-        </ButtonKakao>
-        <ButtonKakao type="button" onClick={onClickLogOut}>
-          로그아웃
-        </ButtonKakao>
+        </ButtonKakao>        
         {/* <KakaoLogin token={token} onSuccess={console.log} onFail={console.error} onLogout={console.info} /> */}
       </Form>
       <LinkContainer>

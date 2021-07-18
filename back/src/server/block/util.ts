@@ -6,7 +6,7 @@ const hexToBinary = (s: string): string => {
         'a': '1010', 'b': '1011', 'c': '1100', 'd': '1101',
         'e': '1110', 'f': '1111'
     };
-    for (let i: number = 0; i < s.length; i = i + 1) {
+    for (let i: number = 0; i < s.length; i++) {
         if (lookupTable[s[i]]) {
             ret += lookupTable[s[i]];
         } else {

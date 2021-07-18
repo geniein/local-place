@@ -37,7 +37,7 @@ const genesisTransaction = {
 };
 
 const genesisBlock: Block = new Block(
-    0, '91a73664bc84c0baa1fc75ea6e4aa6d1d20c5df664c724e3159aefc2e1186627', '', 1465154705, [genesisTransaction], 0, 0
+    0, '91a73664bc84c0baa1fc75ea6e4aa6d1d20c5df664c724e3159aefc2e1186627', '', 1626592063602, [genesisTransaction], 0, 0
 );
 
 let blockchain: Block[] = [genesisBlock];
@@ -58,7 +58,7 @@ const setUnspentTxOuts = (newUnspentTxOut: UnspentTxOut[]) => {
 const getLatestBlock = (): Block => blockchain[blockchain.length - 1];
 
 // in seconds
-const BLOCK_GENERATION_INTERVAL: number = 10;
+const BLOCK_GENERATION_INTERVAL: number = 3000;
 
 // in blocks
 const DIFFICULTY_ADJUSTMENT_INTERVAL: number = 10;
@@ -85,28 +85,16 @@ const getAdjustedDifficulty = (latestBlock: Block, aBlockchain: Block[]) => {
     }
 };
 
-const getCurrentTimestamp = (): number => Math.round(new Date().getTime() / 1000);
-
-const generateRawNextBlock = (blockData: Transaction[]) => {
-    const previousBlock: Block = getLatestBlock();
-    const difficulty: number = getDifficulty(getBlockchain());
-    const nextIndex: number = previousBlock.index + 1;
-    const nextTimestamp: number = getCurrentTimestamp();
-    const newBlock: Block = findBlock(nextIndex, previousBlock.hash, nextTimestamp, blockData, difficulty);
-    return null;
-
-};
-
-// gets the unspent transaction outputs owned by the wallet
+const getCurrentTimestamp = (): number => Math.round(new Date().getTime());
 
 const findBlock = (index: number, previousHash: string, timestamp: number, data: Transaction[], difficulty: number): Block => {
     let nonce = 0;
-    while (true) {
+    while (true) {        
         const hash: string = calculateHash(index, previousHash, timestamp, data, difficulty, nonce);
         if (hashMatchesDifficulty(hash, difficulty)) {
             return new Block(index, hash, previousHash, timestamp, data, difficulty, nonce);
-        }
-        nonce++;
+        }    
+        nonce++;        
     }
 };
 
@@ -154,8 +142,8 @@ const getAccumulatedDifficulty = (aBlockchain: Block[]): number => {
 };
 
 const isValidTimestamp = (newBlock: Block, previousBlock: Block): boolean => {
-    return ( previousBlock.timestamp - 60 < newBlock.timestamp )
-        && newBlock.timestamp - 60 < getCurrentTimestamp();
+    return ( previousBlock.timestamp - 60000 < newBlock.timestamp )
+        && newBlock.timestamp - 60000 < getCurrentTimestamp();
 };
 
 const hasValidHash = (block: Block): boolean => {
@@ -177,7 +165,7 @@ const hashMatchesBlockContent = (block: Block): boolean => {
 };
 
 const hashMatchesDifficulty = (hash: string, difficulty: number): boolean => {
-    const hashInBinary: string = hexToBinary(hash);
+    const hashInBinary: string = hexToBinary(hash);    
     const requiredPrefix: string = '0'.repeat(difficulty);
     return hashInBinary.startsWith(requiredPrefix);
 };
@@ -217,9 +205,41 @@ const isValidChain = (blockchainToValidate: Block[]): UnspentTxOut[] => {
 };
 
 const generateNextBlock = () => {
-    const coinbaseTx: Transaction = getCoinbaseTransaction(getPublicFromWallet(), getLatestBlock().index + 1);
-    const blockData: Transaction[] = [coinbaseTx].concat(getTransactionPool());
+    const coinbaseTx: Transaction = getCoinbaseTransaction(getPublicFromWallet(), getLatestBlock().index + 1);    
+    const blockData: Transaction[] = [coinbaseTx].concat(getTransactionPool());    
     return generateRawNextBlock(blockData);
+};
+
+
+const generateRawNextBlock = (blockData: Transaction[]) => {
+    const previousBlock: Block = getLatestBlock();
+    const difficulty: number = getDifficulty(getBlockchain());
+    console.log(`difficulty : ${difficulty}`);
+    const nextIndex: number = previousBlock.index + 1;
+    const nextTimestamp: number = getCurrentTimestamp();
+    const newBlock: Block = findBlock(nextIndex, previousBlock.hash, nextTimestamp, blockData, difficulty);
+    if(addBlockToChain(newBlock)){
+        return newBlock;    
+    }else {
+        return null;
+    }    
+};
+
+
+const addBlockToChain = (newBlock: Block): boolean => {
+    if (isValidNewBlock(newBlock, getLatestBlock())) {
+        const retVal: UnspentTxOut[] = processTransactions(newBlock.data, getUnspentTxOuts(), newBlock.index);
+        if (retVal === null) {
+            console.log('block is not valid in terms of transactions');
+            return false;
+        } else {
+            blockchain.push(newBlock);
+            //setUnspentTxOuts(retVal);
+            //updateTransactionPool(unspentTxOuts);
+            return true;
+        }
+    }
+    return false;
 };
 
 

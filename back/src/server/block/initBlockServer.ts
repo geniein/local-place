@@ -5,10 +5,7 @@ import {
     Block, generateNextBlock, getBlockchain
 } from './blockchain';
 
-const httpPort: number = parseInt(process.env.HTTP_PORT) || 3001;
-const p2pPort: number = parseInt(process.env.P2P_PORT) || 6001;
-
-const initHttpServer = (myHttpPort: number) => {
+const initBlockServer = (myHttpPort: number) => {
     const app = express();
     app.use(bodyParser.json());
 
@@ -30,6 +27,15 @@ const initHttpServer = (myHttpPort: number) => {
             res.send(newBlock);
         }
     });
+
+    //generate new block on every 10 seconds;
+    setInterval(() => {
+        generateNextBlock();
+    }, 10000);
+    //
+    app.listen(myHttpPort, () => {
+        console.log('Listening http on port: ' + myHttpPort);
+    });
 };
 
-initHttpServer(httpPort);
+export default initBlockServer;
