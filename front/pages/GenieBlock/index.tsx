@@ -4,6 +4,7 @@ import React from 'react';
 import {Block} from '@typings/Block'
 import useSWR from 'swr'
 import fetcher from '@utils/fetcher';
+import Sidebar from '@components/Sidebar';
 
 const GenieBlock = () =>{
 
@@ -12,7 +13,8 @@ const GenieBlock = () =>{
       });
     return (            
         <div>            
-            <Navbar/>
+            {/* <Navbar/> */}
+            <Sidebar/>
             {blockData?.sort((a, b) => b.index - a.index ).map((val)=>{
                 return <Blockmain key={val.index} index={val.index} previousHash={val.previousHash} hash={val.hash} timestamp={val.timestamp}/>
             })}

@@ -1,13 +1,14 @@
 /* eslint-disable react/no-array-index-key */
 import React, { forwardRef, LegacyRef } from 'react';
 import classNames from 'classnames';
+import { ContentList } from '../styles';
 
 export type IconShapeType = 'square' | 'round' | 'circle';
 
 export type Props = React.HTMLAttributes<HTMLElement> & {
   className?: string;
   children?: React.ReactNode;
-  iconShape?: IconShapeType;
+  iconShape: IconShapeType;
   popperArrow?: boolean;
 };
 
@@ -24,7 +25,7 @@ const Menu: React.ForwardRefRenderFunction<unknown, Props> = (
       })}
       {...rest}
     >
-      <ul>
+      <ContentList>
         {React.Children.toArray(children)
           .filter(Boolean)
           .map((child, index) =>
@@ -34,7 +35,7 @@ const Menu: React.ForwardRefRenderFunction<unknown, Props> = (
               popperarrow: popperArrow === true ? 1 : 0,
             }),
           )}
-      </ul>
+      </ContentList>
     </nav>
   );
 };

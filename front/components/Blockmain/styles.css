@@ -77,3 +77,11 @@
     color: #9FA5A8;
     padding: 0 15px;
 }
+
+.main {
+	padding: 24px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}

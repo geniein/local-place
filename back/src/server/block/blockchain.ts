@@ -1,7 +1,7 @@
 import * as CryptoJS from 'crypto-js';
 import * as _ from 'lodash';
 import { getCoinbaseTransaction, processTransactions, Transaction, UnspentTxOut } from './transaction';
-import { getTransactionPool } from './transactionpool';
+import { getTransactionPool } from './transactionPool';
 import {hexToBinary} from './util';
 import { getPublicFromWallet } from './wallet';
 
@@ -58,7 +58,7 @@ const setUnspentTxOuts = (newUnspentTxOut: UnspentTxOut[]) => {
 const getLatestBlock = (): Block => blockchain[blockchain.length - 1];
 
 // in seconds
-const BLOCK_GENERATION_INTERVAL: number = 3000;
+const BLOCK_GENERATION_INTERVAL: number = 10000;
 
 // in blocks
 const DIFFICULTY_ADJUSTMENT_INTERVAL: number = 10;

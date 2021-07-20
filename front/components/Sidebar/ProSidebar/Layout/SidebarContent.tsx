@@ -1,23 +1,23 @@
 import React, { forwardRef, LegacyRef } from 'react';
 import classNames from 'classnames';
-import { Footer } from '../styles';
+import { Content } from '../styles';
 
 export type Props = React.HTMLAttributes<HTMLElement> & {
   className?: string;
   children?: React.ReactNode;
 };
 
-const SidebarFooter: React.ForwardRefRenderFunction<unknown, Props> = (
+const SidebarContent: React.ForwardRefRenderFunction<unknown, Props> = (
   { children, className, ...rest },
   ref,
 ) => {
-  const sidebarFooterRef: LegacyRef<HTMLDivElement> =
+  const sidebarContentRef: LegacyRef<HTMLDivElement> =
     (ref as any) || React.createRef<HTMLDivElement>();
   return (
-    <Footer ref={sidebarFooterRef} {...rest}>
-      {children}
-    </Footer>   
+      <Content ref={sidebarContentRef} {...rest}>
+          {children}
+      </Content>    
   );
 };
 
-export default forwardRef<unknown, Props>(SidebarFooter);
+export default forwardRef<unknown, Props>(SidebarContent);

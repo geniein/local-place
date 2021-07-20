@@ -1,4 +1,5 @@
 import React, { forwardRef, LegacyRef } from 'react';
+import { Header } from '../styles';
 import classNames from 'classnames';
 
 export type Props = React.HTMLAttributes<HTMLElement> & {
@@ -13,9 +14,9 @@ const SidebarHeader: React.ForwardRefRenderFunction<unknown, Props> = (
   const sidebarHeaderRef: LegacyRef<HTMLDivElement> =
     (ref as any) || React.createRef<HTMLDivElement>();
   return (
-    <div ref={sidebarHeaderRef} className={classNames('pro-sidebar-header', className)} {...rest}>
+    <Header ref={sidebarHeaderRef} {...rest}>
       {children}
-    </div>
+    </Header>  
   );
 };
 
